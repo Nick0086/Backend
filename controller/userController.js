@@ -18,6 +18,23 @@ exports.getUser = async (req,res) =>{
         })
     }
 }
+
+exports.alluser = async (req,res) => {
+    try {
+        const userData = await userModel.find({_id:req.user});
+        res.status(200).json({
+            status: "Success",
+            data: userData,
+        })
+
+    } catch (error) {
+        res.status(404).json({
+            status: "failed",
+            message: "user Not exist",
+            error
+        })
+    }
+}
 exports.createUser = async (req, res) => {
 
     try {
