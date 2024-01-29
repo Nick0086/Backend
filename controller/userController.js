@@ -21,7 +21,7 @@ exports.getUser = async (req,res) =>{
 
 exports.alluser = async (req,res) => {
     try {
-        const userData = await userModel.find({_id:req.user});
+        const userData = await userModel.find();
         res.status(200).json({
             status: "Success",
             data: userData,
