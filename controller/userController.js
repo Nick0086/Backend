@@ -9,7 +9,6 @@ exports.getUser = async (req,res) =>{
             status: "Success",
             data: userData,
         })
-
     } catch (error) {
         res.status(404).json({
             status: "failed",
@@ -18,7 +17,6 @@ exports.getUser = async (req,res) =>{
         })
     }
 }
-
 exports.alluser = async (req,res) => {
     try {
         const userData = await userModel.find();
@@ -54,7 +52,6 @@ exports.createUser = async (req, res) => {
         })
     }
 }
-
 exports.loginUser = async (req, res) => {
 
     try {
@@ -87,7 +84,6 @@ exports.loginUser = async (req, res) => {
         })
     }
 }
-
 exports.logout = async (req, res) => {
     try {
         login = 0
