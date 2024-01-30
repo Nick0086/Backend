@@ -16,8 +16,7 @@ exports.createPost = async (req, res) => {
     } catch (error) {
         res.status(404).json({
             status: "failed",
-            message: "Add Post Failed",
-            error
+            massage: error.message,
         });
     }
 };
@@ -36,7 +35,7 @@ exports.allPosts = async (req, res) => {
     } catch (error) {
         res.status(404).json({
             status: "failed",
-            message: "Error in fetch post",
+            message: "Get All Posts Failed",
             error
         });
     }
@@ -46,7 +45,15 @@ exports.allPosts = async (req, res) => {
 exports.singlePost = async (req, res) => {
     try {
 
-        const postData = await postmodel.findById(req.params.id)
+        const postData = await postmodel.findById(req.params.id).populate("userId", "-password")
+
+        if(!postData){
+            return res.status(404).json({
+                status:"Failed",
+                Message :"No post found"
+                })
+        }
+
         res.status(200).json({
             status: "Success",
             data: postData,
@@ -55,8 +62,7 @@ exports.singlePost = async (req, res) => {
     } catch (error) {
         res.status(404).json({
             status: "failed",
-            message: "Error in fetch post",
-            error
+            message: "Error In Fetching The Post" + error,
         });
     }
 }
@@ -70,13 +76,12 @@ exports.updatePost = async (req, res) => {
         const postData = await postmodel.findByIdAndUpdate(postId,postDataToUpdate);
         res.status(200).json({
             status: "Success",
-            data: postData,
+            message: 'Post updated successfully',
         });
     } catch (error) {
         res.status(404).json({
             status: "failed",
-            message: "Error in update post",
-            error
+            message: 'Error while updating the Post' + error
         });
     }
 }
@@ -96,8 +101,7 @@ exports.deletePost = async (req, res) => {
     } catch (error) {
         res.status(404).json({
             status: "failed",
-            message: "Error in delete post",
-            error
+            message: "Error in deleting the Post!" + cerror
         });
     }
 }

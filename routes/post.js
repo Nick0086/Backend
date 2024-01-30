@@ -6,7 +6,7 @@ var router = express.Router();
 router.get('/',allPosts);
 router.get('/post/:id' , singlePost);
 router.post('/create',createPost);
-router.post('/update/:id',updatePost);
+router.put('/update/:id',updatePost);
 router.delete('/delete/:id',deletePost);
 
 module.exports = router;
