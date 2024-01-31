@@ -1,12 +1,13 @@
 const userModel = require("../model/userModel");
 const postmodel = require("../model/postModel");
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const moment = require('moment-timezone');
 
 // function for create post
 exports.createPost = async (req, res) => {
     try {
 
         const postData = await postmodel.create(req.body);
-        console.log("createPost", postData);
         res.status(200).json({
             status: "Success",
             message: "Post Create successfully",
@@ -26,7 +27,6 @@ exports.allPosts = async (req, res) => {
     try {
 
         const postData = await postmodel.find().populate("userId", "-password");
-        console.log("allPost", postData);
         res.status(200).json({
             status: "Success",
             data: postData,
@@ -47,11 +47,11 @@ exports.singlePost = async (req, res) => {
 
         const postData = await postmodel.findById(req.params.id).populate("userId", "-password")
 
-        if(!postData){
+        if (!postData) {
             return res.status(404).json({
-                status:"Failed",
-                Message :"No post found"
-                })
+                status: "Failed",
+                Message: "No post found"
+            })
         }
 
         res.status(200).json({
@@ -72,8 +72,9 @@ exports.singlePost = async (req, res) => {
 exports.updatePost = async (req, res) => {
     const postId = req.params.id;
     const postDataToUpdate = req.body;
+    postDataToUpdate.updatedAt = moment().tz(userTimeZone).format();
     try {
-        const postData = await postmodel.findByIdAndUpdate(postId,postDataToUpdate);
+        const postData = await postmodel.findByIdAndUpdate(postId, postDataToUpdate);
         res.status(200).json({
             status: "Success",
             message: 'Post updated successfully',
@@ -101,7 +102,63 @@ exports.deletePost = async (req, res) => {
     } catch (error) {
         res.status(404).json({
             status: "failed",
-            message: "Error in deleting the Post!" + cerror
+            message: "Error in deleting the Post!" + error
+        });
+    }
+}
+
+
+// Function to GET FILTER POsts
+exports.getFilteredPosts = async (req, res) => {
+    try {
+
+        let filterQuery = {};
+
+        if(req.body.userId !== undefined){
+            filterQuery["userId"] = req.body.userId;
+        }
+        if (req.query.status !== undefined) {
+            filterQuery["status"] = req.query.status;
+        }
+        if (req.query.category !== undefined) {
+            filterQuery["Category"] = req.query.category;
+        }
+
+        let sortQuery;
+        if(req.query.sort !== undefined){
+            if(req.query.sort === "titleasc"){
+                sortQuery = "Title";
+            }
+            if(req.query.sort === "titledes"){
+                sortQuery = "-Title";
+            }
+            if(req.query.sort === "viewasc"){
+                sortQuery = "view";
+            }
+            if(req.query.sort === "viewdes"){
+                sortQuery = "-view";
+            }
+            if(req.query.sort === "createasc"){
+                sortQuery = "createdAt";
+            }
+            if(req.query.sort === "createdes"){
+                sortQuery = "-createdAt";
+            }
+        }
+        console.log("sortQuery",sortQuery)
+        // const posts = await postmodel.find(filterQuery).populate("userId", "-password")
+        const posts = await postmodel.find(filterQuery).sort(sortQuery).populate("userId", "-password")
+
+        res.status(200).json({
+            status: "Success",
+            data: posts,
+            total:posts.length,
+        });
+
+    } catch (error) {
+        res.status(404).json({
+            status: "failed",
+            message: "Error In Filtering The Posts" + error,
         });
     }
 }
