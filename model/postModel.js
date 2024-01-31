@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const moment = require('moment-timezone');
+const data = new Date()
 
 
 const postSchema = new mongoose.Schema({
@@ -26,11 +27,11 @@ const postSchema = new mongoose.Schema({
     },
     createdAt: {
         type: String,
-        default: moment().tz(userTimeZone).format()
+        default: moment(data).tz(userTimeZone).format()
     },
     updatedAt: {
         type: String,
-        default: moment().tz(userTimeZone).format()
+        default: moment(data).tz(userTimeZone).format()
     },
     view: {
         type: Number,

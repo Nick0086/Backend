@@ -72,7 +72,8 @@ exports.singlePost = async (req, res) => {
 exports.updatePost = async (req, res) => {
     const postId = req.params.id;
     const postDataToUpdate = req.body;
-    postDataToUpdate.updatedAt = moment().tz(userTimeZone).format();
+    const date = new Date()
+    postDataToUpdate.updatedAt = moment(date).tz(userTimeZone).format();
     try {
         const postData = await postmodel.findByIdAndUpdate(postId, postDataToUpdate);
         res.status(200).json({
@@ -96,7 +97,6 @@ exports.deletePost = async (req, res) => {
         const deletedPost = await postmodel.findOneAndDelete({ _id: id }); // 
         res.status(200).json({
             status: "Success",
-            data: deletedPost,
         });
 
     } catch (error) {
@@ -125,25 +125,17 @@ exports.getFilteredPosts = async (req, res) => {
         }
 
         let sortQuery;
-        if(req.query.sort !== undefined){
-            if(req.query.sort === "titleasc"){
-                sortQuery = "Title";
-            }
-            if(req.query.sort === "titledes"){
-                sortQuery = "-Title";
-            }
-            if(req.query.sort === "viewasc"){
-                sortQuery = "view";
-            }
-            if(req.query.sort === "viewdes"){
-                sortQuery = "-view";
-            }
-            if(req.query.sort === "createasc"){
-                sortQuery = "createdAt";
-            }
-            if(req.query.sort === "createdes"){
-                sortQuery = "-createdAt";
-            }
+        const sortOptions = {
+            "titleasc": "Title",
+            "titledes": "-Title",
+            "viewasc": "view",
+            "viewdes": "-view",
+            "createasc": "createdAt",
+            "createdes": "-createdAt"
+        };
+
+        if(req.query.sort !== undefined && sortOptions[req.query.sort]) {
+            sortQuery = sortOptions[req.query.sort];
         }
         console.log("sortQuery",sortQuery)
         // const posts = await postmodel.find(filterQuery).populate("userId", "-password")
