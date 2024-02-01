@@ -91,13 +91,13 @@ exports.loginUser = async (req, res) => {
                     })
                     login = 1;
                 } else {
-                    res.status(203).json("Enter correct email and password");
+                    res.status(401).json("Enter correct email and password");
                 }
             } else {
-                res.status(203).json("Enter correct email and password");
+                res.status(401).json("Enter correct email and password");
             }
         } else {
-            res.status(200).json("User already Login");
+            res.status(401).json("User already Login");
         }
     } catch (error) {
         res.status(404).json({
