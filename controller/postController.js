@@ -44,7 +44,6 @@ exports.allPosts = async (req, res) => {
 // function for get single post
 exports.singlePost = async (req, res) => {
     try {
-
         const postData = await postmodel.findById(req.params.id).populate("userId", "-password")
 
         if (!postData) {
