@@ -47,7 +47,6 @@ exports.createUser = async (req, res) => {
             res.status(200).json({
                 status: "Success",
                 data: userData,
-                token: `Bearer ${token}`
             })
         } else {
             return res.status(409).json({
@@ -79,7 +78,6 @@ exports.loginUser = async (req, res) => {
 
                     res.status(200).json({
                         status: "user login successfully",
-                        token: `Bearer ${token}`
                     })
                     login = 1;
                 } else {
