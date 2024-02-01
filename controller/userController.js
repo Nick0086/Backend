@@ -42,7 +42,7 @@ exports.createUser = async (req, res) => {
             const userData = await userModel.create(req.body);
             // const token = await jwt.sign(userData._id, process.env.JWT_KEY);
             // Set the token as an HTTP-only cookie
-            res.cookie('jwt', token, { httpOnly: true });
+            // res.cookie('jwt', token, { httpOnly: true });
 
             res.status(200).json({
                 status: "Success",
@@ -51,14 +51,13 @@ exports.createUser = async (req, res) => {
         } else {
             return res.status(409).json({
                 status: "Email already exists"
-
             })
         }
 
     } catch (error) {
         res.status(404).json({
             status: "failed",
-            message: "error in getUser",
+            message: "error in createUser",
             error
         })
     }
