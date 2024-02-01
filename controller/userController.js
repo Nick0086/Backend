@@ -47,6 +47,7 @@ exports.createUser = async (req, res) => {
             res.status(200).json({
                 status: "Success",
                 data: userData,
+                token: `Bearer ${token}`
             })
         } else {
             return res.status(409).json({
@@ -74,10 +75,11 @@ exports.loginUser = async (req, res) => {
                     // const token = generateToken({ user })
                     const token = await jwt.sign(user[0].id, process.env.JWT_KEY)
                     // Set the token as an HTTP-only cookie
-                    res.cookie('jwt', token, { httpOnly: true });
+                    // res.cookie('jwt', token, { httpOnly: true });
 
                     res.status(200).json({
                         status: "user login successfully",
+                        token: `Bearer ${token}`
                     })
                     login = 1;
                 } else {
