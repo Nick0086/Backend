@@ -40,9 +40,9 @@ exports.createUser = async (req, res) => {
 
         if (!user) {
             const userData = await userModel.create(req.body);
-            // const token = await jwt.sign(userData._id, process.env.JWT_KEY);
+            const token = await jwt.sign(userData._id, process.env.JWT_KEY);
             // Set the token as an HTTP-only cookie
-            // res.cookie('jwt', token, { httpOnly: true });
+            res.cookie('jwt', token, { httpOnly: true });
 
             res.status(200).json({
                 status: "Success",
