@@ -72,7 +72,7 @@ exports.loginUser = async (req, res) => {
             if (user) {
                 if (user[0].password === req.body.password) {
                     // const token = generateToken({ user })
-                    const token = await jwt.sign(user[0].id, process.env.JWT_KEY)
+                    const token = await jwt.sign(user[0]._id, process.env.JWT_KEY)
                     // Set the token as an HTTP-only cookie
                     res.cookie('jwt', token, { httpOnly: true });
 
