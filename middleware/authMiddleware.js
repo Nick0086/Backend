@@ -5,7 +5,7 @@ exports.authenticateUser = async (req, res, next) => {
 
     const token = req.header('Authorization');
     // Extract the JWT token from the cookie
-    // const token = req.cookies.jwt;
+    const token = req.cookies.jwt;
 
     try {
         if (token) {
