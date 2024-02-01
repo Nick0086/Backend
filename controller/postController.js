@@ -67,7 +67,6 @@ exports.singlePost = async (req, res) => {
 }
 
 // function for update single post
-
 exports.updatePost = async (req, res) => {
     const postId = req.params.id;
     const postDataToUpdate = req.body;
@@ -105,7 +104,6 @@ exports.deletePost = async (req, res) => {
         });
     }
 }
-
 
 // Function to GET FILTER POsts
 exports.getFilteredPosts = async (req, res) => {
