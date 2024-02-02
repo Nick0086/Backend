@@ -5,7 +5,7 @@ var login = 0;
 
 exports.getUser = async (req, res) => {
     try {
-        const userData = await userModel.find({ _id: req.user });
+        const userData = await userModel.findOne({ _id: req.user });
         res.status(200).json({
             status: "Success",
             data: userData,
