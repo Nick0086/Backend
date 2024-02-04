@@ -99,6 +99,7 @@ exports.deletePost = async (req, res) => {
         const deletedPost = await postmodel.findOneAndDelete({ _id: id }); // 
         res.status(200).json({
             status: "Success",
+            message: `Deleted Successfully`,
         });
 
     } catch (error) {
@@ -115,8 +116,8 @@ exports.getFilteredPosts = async (req, res) => {
 
         let filterQuery = {};
 
-        if (req.body.userId !== undefined) {
-            filterQuery["userId"] = req.body.userId;
+        if (req.query.userId !== undefined) {
+            filterQuery["userId"] = req.query.userId;
         }
         if (req.query.status !== undefined) {
             filterQuery["status"] = req.query.status;
@@ -148,8 +149,6 @@ exports.getFilteredPosts = async (req, res) => {
 
         // const posts = await postmodel.find(filterQuery).populate("userId", "-password")
         const posts = await postmodel.find(filterQuery).sort(sortQuery || "-createdAt").populate("userId", "-password").skip(skipRecords).limit(limit)
-
-
 
         res.status(200).json({
             status: "Success",

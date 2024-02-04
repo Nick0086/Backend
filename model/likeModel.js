@@ -9,13 +9,6 @@ const likeSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: "userModel"
     },
-    count: {
-        type: Number,
-        default: 0,
-    },
-    time: {
-        timestamps: true
-    }
 })
 
 module.exports = mongoose.model("likeModel",likeSchema);

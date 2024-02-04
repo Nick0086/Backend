@@ -2,21 +2,22 @@ const likeModel = require("../model/likeModel")
 
 // functionn for add like
 exports.addLike = async (req, res) => {
+    console.log("req", req.body)
     try {
         const likeExist = await likeModel.findOne({ userId: req.body.userId, postId: req.body.postId });
         if (likeExist) {
-            return res.status(409).json({ message: 'You already liked this post' });
+            res.status(409).json({ message: 'You already liked this post' });
         }
 
         const newLike = await likeModel.create(req.body);
-        if (!newLike) return res.status(500).json('Server error')
-        return res.status(201).json({
-            message: "Like Add",
-            data: newLike
+        if (!newLike) return res.status(500).json('Server error');
+        res.status(201).json({
+            message: "Like Add successfully!",
+            likeId: newLike.id
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).send(error);
+        res.status(500).send(error);
     }
 };
 
@@ -25,29 +26,28 @@ exports.removeLike = async (req, res) => {
     try {
         // find the like in database by id and delete it
         const like = await likeModel.findByIdAndDelete(req.params.id);
-        if (!like) return res.status(404).json({ message: "Like not found" });
-        return res.status(200).json({
+        if (!like) res.status(404).json({ message: "Like not found" });
+        res.status(200).json({
             message: "Like removed successfully!"
         })
     } catch (err) {
         console.error(err);
-        return res.status(500).send(err);
+        res.status(500).send(err);
     }
 };
 
 // function for coount like  on a post and check user already like or not
 exports.countLikeOnPost = async (req, res) => {
     try {
-        let likes = await likeModel.find({ postId: req.params.id }).count();
-        let isUserLiked = await likeModel.findOne({ userId: req.body.userId, postId: req.body.postId });
-        return res.status(200).json({
-            countLikes: likes,
-            isUserLiked: isUserLiked ? true : false
+        let likes = await likeModel.find({ postId: req.query.postId })
+        let isUserLiked = await likeModel.findOne(req.query);
+        res.status(200).json({
+            countLikes: likes.length,
+            isUserLiked: isUserLiked ? true : false,
+            likeId: isUserLiked.id,
         })
     } catch (error) {
         console.error("Error from counting likes on posts");
-        return res.status(500).send(error);
+        res.status(500).send(error);
     }
-}
-
-
+};

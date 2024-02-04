@@ -5,6 +5,6 @@ var router = express.Router();
 /* GET users listing. */
 router.get('/',countLikeOnPost);
 router.post('/addLike',addLike);
-router.delete('/removeLike',removeLike);
+router.delete('/removeLike/:id',removeLike);
 
 module.exports = router;
