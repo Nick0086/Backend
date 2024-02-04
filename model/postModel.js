@@ -2,24 +2,29 @@ const mongoose = require('mongoose');
 
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const moment = require('moment-timezone');
-const data = new Date()
+
 
 
 const postSchema = new mongoose.Schema({
     Title: {
         type: String,
+        required:true,
     },
     Featureimage: {
         type: String,
+        required:true,
     },
     Category: {
         type: String,
+        required:true,
     },
     status: {
         type: String,
+        required:true,
     },
     Content: {
         type: String,
+        required:true,
     },
     userId: {
         type: mongoose.Types.ObjectId,  //reference to the User model
@@ -27,16 +32,17 @@ const postSchema = new mongoose.Schema({
     },
     createdAt: {
         type: String,
-        default: moment(data).tz(userTimeZone).format()
+        default: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
     },
     updatedAt: {
         type: String,
-        default: moment(data).tz(userTimeZone).format()
+        default: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
     },
     view: {
         type: Number,
         default: 0
     }
 })
+
 
 module.exports = mongoose.model("postSchema", postSchema);

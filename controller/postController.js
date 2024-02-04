@@ -7,6 +7,8 @@ const moment = require('moment-timezone');
 exports.createPost = async (req, res) => {
     try {
 
+        req.body.createdAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        req.body.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
         const postData = await postmodel.create(req.body);
         res.status(200).json({
             status: "Success",
@@ -30,6 +32,7 @@ exports.allPosts = async (req, res) => {
         res.status(200).json({
             status: "Success",
             data: postData,
+            total: postData.length,
         });
 
     } catch (error) {
@@ -70,8 +73,9 @@ exports.singlePost = async (req, res) => {
 exports.updatePost = async (req, res) => {
     const postId = req.params.id;
     const postDataToUpdate = req.body;
-    const date = new Date()
-    postDataToUpdate.updatedAt = moment(date).tz(userTimeZone).format();
+    if (!postDataToUpdate.view) {
+        postDataToUpdate.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+    }
     try {
         const postData = await postmodel.findByIdAndUpdate(postId, postDataToUpdate);
         res.status(200).json({
@@ -111,7 +115,7 @@ exports.getFilteredPosts = async (req, res) => {
 
         let filterQuery = {};
 
-        if(req.body.userId !== undefined){
+        if (req.body.userId !== undefined) {
             filterQuery["userId"] = req.body.userId;
         }
         if (req.query.status !== undefined) {
@@ -123,25 +127,36 @@ exports.getFilteredPosts = async (req, res) => {
 
         let sortQuery;
         const sortOptions = {
-            "titleasc": "Title",
-            "titledes": "-Title",
-            "viewasc": "view",
-            "viewdes": "-view",
-            "createasc": "createdAt",
-            "createdes": "-createdAt"
+            "view": "view",
+            "-view": "-view",
+            "createdAt": "createdAt",
+            "-createdAt": "-createdAt"
         };
 
-        if(req.query.sort !== undefined && sortOptions[req.query.sort]) {
+        if (req.query.sort !== undefined && sortOptions[req.query.sort]) {
             sortQuery = sortOptions[req.query.sort];
         }
-        console.log("sortQuery",sortQuery)
+
+        let limit = req.query.limit || 10;
+        let page_no = parseInt(req.query.page) || 1;
+
+        // Calculate the offset for pagination
+        let skipRecords = (page_no - 1) * limit;
+
+        var total_data = await postmodel.find(filterQuery).count();
+        var total_page = Math.ceil(total_data / limit);
+
         // const posts = await postmodel.find(filterQuery).populate("userId", "-password")
-        const posts = await postmodel.find(filterQuery).sort(sortQuery).populate("userId", "-password")
+        const posts = await postmodel.find(filterQuery).sort(sortQuery || "-createdAt").populate("userId", "-password").skip(skipRecords).limit(limit)
+
+
 
         res.status(200).json({
             status: "Success",
             data: posts,
-            total:posts.length,
+            total_data,
+            page_no,
+            total_page,
         });
 
     } catch (error) {
