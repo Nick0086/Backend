@@ -1,4 +1,6 @@
-const commentModel = require("../model/commentModel");
+
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const moment = require('moment-timezone'); const commentModel = require("../model/commentModel");
 
 
 // function for create comment
@@ -6,8 +8,9 @@ exports.createComment = async (req, res) => {
     try {
 
         const commentData = req.body;
-
-        if (!commentData.text || !commentData.postId || !commentData.userId) {
+        commentData.createdAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        commentData.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        if (!commentData.Comment || !commentData.postId || !commentData.userId) {
             res.status(400).json({ message: "Missing fields" })
         } else {
             const response = await commentModel.create(commentData);
@@ -15,7 +18,7 @@ exports.createComment = async (req, res) => {
                 res.status(201).json({
                     status: 'success',
                     data: response,
-                    message: 'Comment Create'
+                    message: 'Comment created successfully'
                 });
             } else {
                 res.status(500).json({ message: 'Failed to create new comment' });
@@ -32,8 +35,8 @@ exports.getComments = async (req, res) => {
     try {
         const postId = req.params.id;
         if (postId) {
-            const total = await commentModel.find(postId).countDocuments();
-            const comments = await commentModel.findByPostId(postId);
+            const total = await commentModel.find({ postId }).countDocuments();
+            const comments = await commentModel.find({ postId }).sort("-createdAt").populate("userId", "name");
             if (comments) {
                 res.status(200).json({
                     status: 'success',
@@ -41,12 +44,12 @@ exports.getComments = async (req, res) => {
                     total: total,
                 });
             } else {
-                res.status(500).json({ message: 'No such Post in the database' });
+                res.status(500).json({ message: 'No comments found for this post...!' });
             }
         }
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: 'Server Error during getting comments ' });
+        res.status(500).json({ message: 'Server error while getting comments' });
     }
 };
 
@@ -54,17 +57,16 @@ exports.getComments = async (req, res) => {
 exports.deleteComment = async (req, res) => {
     try {
         const commnetId = req.params.id;
-        let deletedComment = await commentModel.remove(commnetId);
+        let deletedComment = await commentModel.findByIdAndDelete(commnetId);
         if (!deletedComment) {
-            res.status(400).json({ message: "No such Comment in the database." })
+            res.status(400).json({ message: "No such comment found...!" })
         } else {
             res.status(200).json({
                 status: 'succes',
-                message: 'Comment Delete'
+                message: 'Comment deleted successfully'
             });
         };
     } catch (error) {
-        console.log('Error in deleting comment : ', error);
-        res.status(500).json({ message: 'Server Error while Deleting Comment.' });
+        res.status(500).json({ message: 'Server error while deleting comment...!' });
     }
 }

@@ -2,13 +2,22 @@ const userModel = require("../model/userModel");
 const postmodel = require("../model/postModel");
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const moment = require('moment-timezone');
+const { uploadeCloudinary } = require("../utils/cloudinart");
 
 // function for create post
 exports.createPost = async (req, res) => {
     try {
 
+        // Path to the uploaded file on the server
+        const localFilePath = req.file.path;
+        const imageData = await uploadeCloudinary(localFilePath);
+
+        // chage image fields with url
+        req.body.Featureimage = imageData.url;
+
         req.body.createdAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
         req.body.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+
         const postData = await postmodel.create(req.body);
         res.status(200).json({
             status: "Success",

@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const moment = require('moment-timezone');
+
 
 const commentSchema = new mongoose.Schema(
     {
@@ -15,9 +18,14 @@ const commentSchema = new mongoose.Schema(
             Required: "Please enter a comment",
             maxlength: [500, "Your comment is too long"],
         },
-    },
-    {
-        timestamps: true
+        createdAt: {
+            type: String,
+            default: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        },
+        updatedAt: {
+            type: String,
+            default: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        },
     }
 );
 

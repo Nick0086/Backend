@@ -15,7 +15,6 @@ exports.addLike = async (req, res) => {
             likeId: newLike.id
         });
     } catch (error) {
-        console.error(error);
         res.status(500).send(error);
     }
 };
@@ -30,7 +29,6 @@ exports.removeLike = async (req, res) => {
             message: "Like removed successfully!"
         })
     } catch (err) {
-        console.error(err);
         res.status(500).send(err);
     }
 };
@@ -46,7 +44,6 @@ exports.countLikeOnPost = async (req, res) => {
             likeId: isUserLiked.id,
         })
     } catch (error) {
-        console.error("Error from counting likes on posts");
         res.status(500).send(error);
     }
 };
