@@ -2,7 +2,6 @@ const likeModel = require("../model/likeModel")
 
 // functionn for add like
 exports.addLike = async (req, res) => {
-    console.log("req", req.body)
     try {
         const likeExist = await likeModel.findOne({ userId: req.body.userId, postId: req.body.postId });
         if (likeExist) {
