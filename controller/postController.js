@@ -2,19 +2,20 @@ const userModel = require("../model/userModel");
 const postmodel = require("../model/postModel");
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const moment = require('moment-timezone');
-const { uploadeCloudinary } = require("../utils/cloudinart");
+const { uploadeCloudinary, deleteFromCloudinary } = require("../utils/cloudinart");
 
 // function for create post
 exports.createPost = async (req, res) => {
     try {
 
+        // console.log("req.body",req.body);
+
         // Path to the uploaded file on the server
         const localFilePath = req.file.path;
         const imageData = await uploadeCloudinary(localFilePath);
-
         // chage image fields with url
         req.body.Featureimage = imageData.url;
-
+        req.body.imageId = imageData.public_id;
         req.body.createdAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
         req.body.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
 
@@ -86,10 +87,31 @@ exports.updatePost = async (req, res) => {
         postDataToUpdate.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
     }
     try {
+        const post = await postmodel.findOne(postId);
+        if (post) {
+            deleteFromCloudinary(post.imageId)  //delete image from cloudinary server 
+        } else {
+            res.status(404).json({
+                status: "Failed",
+                message: "No post found"
+            });
+        }
+
+        // Path to the uploaded file on the server
+        const localFilePath = req.file.path;
+        const imageData = await uploadeCloudinary(localFilePath);
+
+        // chage image fields with url
+        postDataToUpdate.Featureimage = imageData.url;
+        postDataToUpdate.imageId = imageData.public_id;
+        postDataToUpdate.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+
         const postData = await postmodel.findByIdAndUpdate(postId, postDataToUpdate);
+
         res.status(200).json({
             status: "Success",
             message: 'Post updated successfully',
+            data: postData,
         });
     } catch (error) {
         res.status(404).json({
@@ -104,8 +126,10 @@ exports.deletePost = async (req, res) => {
     try {
 
         const id = req.params.id;
-
-        const deletedPost = await postmodel.findOneAndDelete({ _id: id }); // 
+        const deletedPost = await postmodel.findOneAndDelete({ _id: id });
+        if (deletedPost && deletedPost.imageId) {
+            deleteFromCloudinary(deletedPost.imageId) // deleting image from cloudinary server
+        }
         res.status(200).json({
             status: "Success",
             message: `Deleted Successfully`,

@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const moment = require('moment-timezone');
 
-
-
 const postSchema = new mongoose.Schema({
     Title: {
         type: String,
@@ -13,6 +11,9 @@ const postSchema = new mongoose.Schema({
     Featureimage: {
         type: String,
         required:true,
+    },
+    imageId:{
+        type:String,
     },
     Category: {
         type: String,

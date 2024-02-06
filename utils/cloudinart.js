@@ -22,8 +22,18 @@ exports.uploadeCloudinary = async (localFilePath) => {
         }
 
     } catch (error) {
-        fs.unlinkSync(localFilePath);
+        fs.unlinkSync(localFilePath)
         console.log("Error in uploading file to Cloudinary");
         return false;
     }
+}
+
+exports.deleteFromCloudinary = async (public_id) => {
+    try {
+        const result = await cloudinary.uploader.destroy(public_id);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+
 }
