@@ -10,7 +10,7 @@ exports.addLike = async (req, res) => {
         }
 
         const newLike = await likeModel.create(req.body);
-        if (!newLike) return res.status(500).json('Server error');
+        if (!newLike) return res.status(500).json('Failed to add like');
         res.status(201).json({
             message: "Like Add successfully!",
             likeId: newLike.id

@@ -1,34 +1,36 @@
-const userModel = require("../model/userModel");
 const postmodel = require("../model/postModel");
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const moment = require('moment-timezone');
 const { uploadeCloudinary, deleteFromCloudinary } = require("../utils/cloudinart");
 const { handleServerError } = require("../utils/handleServerError");
+const HttpStatus = {
+    OK: 200,
+    CONFLICT: 409,
+    UNAUTHORIZED: 401,
+    NOT_FOUND: 404
+};
 
 // function for create post
 exports.createPost = async (req, res) => {
     try {
-
-        // console.log("req.body",req.body);
-
         // Path to the uploaded file on the server
-        const localFilePath = req.file.path;
-        const imageData = await uploadeCloudinary(localFilePath);
-        // chage image fields with url
-        req.body.Featureimage = imageData.url;
-        req.body.imageId = imageData.public_id;
-        req.body.createdAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
-        req.body.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        const { url, public_id } = await uploadeCloudinary(req.file.path);
 
-        const postData = await postmodel.create(req.body);
-        res.status(200).json({
-            status: "Success",
-            message: "Post Create successfully",
-            data: postData,
+        const postData = await postmodel.create({
+            ...req.body,
+            Featureimage: url,
+            imageId: public_id,
+            createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
+            updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
         });
 
+        res.status(HttpStatus.OK).json({
+            status: "Success",
+            message: "Post has been added successfully",
+            data: postData,
+        });
     } catch (error) {
-        handleServerError(404, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, req, error);
     }
 };
 
@@ -37,14 +39,14 @@ exports.allPosts = async (req, res) => {
     try {
 
         const postData = await postmodel.find().populate("userId", "-password");
-        res.status(200).json({
+        res.status(HttpStatus.OK).json({
             status: "Success",
             data: postData,
             total: postData.length,
         });
 
     } catch (error) {
-        handleServerError(404, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, req, error);
     }
 }
 
@@ -54,13 +56,13 @@ exports.singlePost = async (req, res) => {
         const postData = await postmodel.findById(req.params.id).populate("userId", "-password")
 
         if (!postData) {
-            return res.status(404).json({
+            return res.status(HttpStatus.OK).json({
                 status: "Failed",
                 Message: "No post found"
             })
         }
 
-        res.status(200).json({
+        res.status(HttpStatus.NOT_FOUND).json({
             status: "Success",
             data: postData,
         });
@@ -78,36 +80,31 @@ exports.updatePost = async (req, res) => {
         console.log("postDataToUpdate", postDataToUpdate)
         const post = await postmodel.findOne({ _id: postId });
         console.log("post", post)
-        if (post) {
-            if (postDataToUpdate.imageId) {
-                deleteFromCloudinary(postDataToUpdate.imageId)  //delete image from cloudinary server 
-                // Path to the uploaded file on the server
-                const localFilePath = req.file.path;
-                const imageData = await uploadeCloudinary(localFilePath);
-
-                // chage image fields with url
-                postDataToUpdate.Featureimage = imageData.url;
-                postDataToUpdate.imageId = imageData.public_id;
-            }
-        } else {
-            res.status(404).json({
-                status: "Failed",
-                message: "No post found"
-            });
+        if (!post) {
+            return res.status(404).json({ status: "Failed", message: "No post found" });
         }
-        if (!postDataToUpdate.Title) {
+
+        if (postDataToUpdate.imageId) {
+            deleteFromCloudinary(postDataToUpdate.imageId) //delete image from cloudinary server 
+            // Path to the uploaded file on the server
+            const { url, public_id } = await uploadeCloudinary(req.file.path);
+            // chage image fields with url
+            postDataToUpdate.Featureimage = url;
+            postDataToUpdate.imageId = public_id;
+        }
+
+        if (postDataToUpdate.Title) {
             postDataToUpdate.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
         }
 
-        const postData = await postmodel.findByIdAndUpdate(postId, postDataToUpdate);
-
-        res.status(200).json({
+        const updatedPost = await postmodel.findByIdAndUpdate(postId, postDataToUpdate);
+        res.status(HttpStatus.OK).json({
             status: "Success",
             message: 'Post updated successfully',
-            data: postData,
+            data: updatedPost,
         });
     } catch (error) {
-        handleServerError(404, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, req, error);
     }
 }
 
@@ -120,13 +117,13 @@ exports.deletePost = async (req, res) => {
         if (deletedPost && deletedPost.imageId) {
             deleteFromCloudinary(deletedPost.imageId) // deleting image from cloudinary server
         }
-        res.status(200).json({
+        res.status(HttpStatus.OK).json({
             status: "Success",
             message: `Deleted Successfully`,
         });
 
     } catch (error) {
-        handleServerError(404, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, req, error);
     }
 }
 
@@ -136,32 +133,20 @@ exports.getFilteredPosts = async (req, res) => {
 
         let filterQuery = {};
 
-        if (req.query.userId !== undefined) {
-            filterQuery["userId"] = req.query.userId;
-        }
-        if (req.query.status !== undefined) {
-            filterQuery["status"] = req.query.status;
-        }
-        if (req.query.category !== undefined) {
-            filterQuery["Category"] = req.query.category;
-        }
+        if (req.query.userId !== undefined) filterQuery["userId"] = req.query.userId;
+        if (req.query.status !== undefined) filterQuery["status"] = req.query.status;
+        if (req.query.category !== undefined) filterQuery["Category"] = req.query.category;
 
-        let sortQuery;
-        const sortOptions = {
-            "view": "view",
-            "-view": "-view",
-            "createdAt": "createdAt",
-            "-createdAt": "-createdAt"
+        const sortOptions = ["view", "-view", "createdAt", "-createdAt"];
+
+        let sortQuery = "-createdAt"; // Default sorting
+
+        if (req.query.sort !== undefined && sortOptions.includes(req.query.sort)) {
+            sortQuery = req.query.sort;
         };
-
-        if (req.query.sort !== undefined && sortOptions[req.query.sort]) {
-            sortQuery = sortOptions[req.query.sort];
-        }
 
         let limit = req.query.limit || 10;
         let page_no = parseInt(req.query.page) || 1;
-
-        // Calculate the offset for pagination
         let skipRecords = (page_no - 1) * limit;
 
         var total_data = await postmodel.find(filterQuery).count();
@@ -170,7 +155,7 @@ exports.getFilteredPosts = async (req, res) => {
         // const posts = await postmodel.find(filterQuery).populate("userId", "-password")
         const posts = await postmodel.find(filterQuery).sort(sortQuery || "-createdAt").populate("userId", "-password").skip(skipRecords).limit(limit)
 
-        res.status(200).json({
+        res.status(HttpStatus.OK).json({
             status: "Success",
             data: posts,
             total_data,
@@ -179,7 +164,7 @@ exports.getFilteredPosts = async (req, res) => {
         });
 
     } catch (error) {
-        handleServerError(404, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, req, error);
     }
 }
 
