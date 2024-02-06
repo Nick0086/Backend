@@ -1,6 +1,7 @@
 const userModel = require("../model/userModel");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { handleServerError } = require("../utils/handleServerError");
 var login = 0;
 
 exports.getUser = async (req, res) => {
@@ -11,11 +12,7 @@ exports.getUser = async (req, res) => {
             data: userData,
         })
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "user Not exist",
-            error
-        })
+        handleServerError(404, req, error);
     }
 }
 exports.alluser = async (req, res) => {
@@ -27,11 +24,7 @@ exports.alluser = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "user Not exist",
-            error
-        })
+        handleServerError(404, req, error);
     }
 }
 exports.createUser = async (req, res) => {
@@ -66,11 +59,7 @@ exports.createUser = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "error in createUser",
-            error
-        });
+        handleServerError(404, req, error);
     }
 }
 exports.loginUser = async (req, res) => {
@@ -81,7 +70,7 @@ exports.loginUser = async (req, res) => {
         if (login == 0) {
             if (user) {
                 const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
-                console.log("isPasswordValid",isPasswordValid);
+                console.log("isPasswordValid", isPasswordValid);
                 if (isPasswordValid) {
                     const token = await jwt.sign(user.id, process.env.JWT_KEY);
                     res.status(200).json({
@@ -100,11 +89,7 @@ exports.loginUser = async (req, res) => {
             res.status(401).json("User already Login");
         }
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "error in loginUser",
-            error: error
-        });
+        handleServerError(404, req, error);
     }
 }
 exports.logout = async (req, res) => {
@@ -112,10 +97,6 @@ exports.logout = async (req, res) => {
         login = 0;
         res.status(200).json('Logged out');
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "error in logout",
-            error: error
-        })
+        handleServerError(404, req, error);
     }
 }

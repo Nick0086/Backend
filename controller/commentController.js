@@ -1,6 +1,6 @@
-
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const moment = require('moment-timezone'); const commentModel = require("../model/commentModel");
+const { handleServerError } = require('../utils/handleServerError');
 
 
 // function for create comment
@@ -24,9 +24,8 @@ exports.createComment = async (req, res) => {
                 res.status(500).json({ message: 'Failed to create new comment' });
             }
         }
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Server error" });
+    } catch (error) {
+        handleServerError(404,res,error)
     }
 }
 
@@ -48,8 +47,7 @@ exports.getComments = async (req, res) => {
             }
         }
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'Server error while getting comments' });
+        handleServerError(404,res,error)
     }
 };
 
@@ -67,6 +65,6 @@ exports.deleteComment = async (req, res) => {
             });
         };
     } catch (error) {
-        res.status(500).json({ message: 'Server error while deleting comment...!' });
+        handleServerError(404,res,error)
     }
 }

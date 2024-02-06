@@ -1,4 +1,5 @@
-const likeModel = require("../model/likeModel")
+const likeModel = require("../model/likeModel");
+const { handleServerError } = require("../utils/handleServerError");
 
 // functionn for add like
 exports.addLike = async (req, res) => {
@@ -15,7 +16,7 @@ exports.addLike = async (req, res) => {
             likeId: newLike.id
         });
     } catch (error) {
-        res.status(500).send(error);
+        handleServerError(404,res,error)
     }
 };
 
@@ -28,8 +29,8 @@ exports.removeLike = async (req, res) => {
         res.status(200).json({
             message: "Like removed successfully!"
         })
-    } catch (err) {
-        res.status(500).send(err);
+    } catch (error) {
+        handleServerError(404,res,error)
     }
 };
 
@@ -44,6 +45,6 @@ exports.countLikeOnPost = async (req, res) => {
             likeId: isUserLiked.id,
         })
     } catch (error) {
-        res.status(500).send(error);
+        handleServerError(404,res,error)
     }
 };

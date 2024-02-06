@@ -3,6 +3,7 @@ const postmodel = require("../model/postModel");
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const moment = require('moment-timezone');
 const { uploadeCloudinary, deleteFromCloudinary } = require("../utils/cloudinart");
+const { handleServerError } = require("../utils/handleServerError");
 
 // function for create post
 exports.createPost = async (req, res) => {
@@ -27,10 +28,7 @@ exports.createPost = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            massage: error.message,
-        });
+        handleServerError(404, req, error);
     }
 };
 
@@ -46,11 +44,7 @@ exports.allPosts = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "Get All Posts Failed",
-            error
-        });
+        handleServerError(404, req, error);
     }
 }
 
@@ -72,10 +66,7 @@ exports.singlePost = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "Error In Fetching The Post" + error,
-        });
+        handleServerError(404, req, error);
     }
 }
 
@@ -83,28 +74,30 @@ exports.singlePost = async (req, res) => {
 exports.updatePost = async (req, res) => {
     const postId = req.params.id;
     const postDataToUpdate = req.body;
-    if (!postDataToUpdate.view) {
-        postDataToUpdate.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
-    }
     try {
-        const post = await postmodel.findOne(postId);
+        console.log("postDataToUpdate", postDataToUpdate)
+        const post = await postmodel.findOne({ _id: postId });
+        console.log("post", post)
         if (post) {
-            deleteFromCloudinary(post.imageId)  //delete image from cloudinary server 
+            if (postDataToUpdate.imageId) {
+                deleteFromCloudinary(postDataToUpdate.imageId)  //delete image from cloudinary server 
+                // Path to the uploaded file on the server
+                const localFilePath = req.file.path;
+                const imageData = await uploadeCloudinary(localFilePath);
+
+                // chage image fields with url
+                postDataToUpdate.Featureimage = imageData.url;
+                postDataToUpdate.imageId = imageData.public_id;
+            }
         } else {
             res.status(404).json({
                 status: "Failed",
                 message: "No post found"
             });
         }
-
-        // Path to the uploaded file on the server
-        const localFilePath = req.file.path;
-        const imageData = await uploadeCloudinary(localFilePath);
-
-        // chage image fields with url
-        postDataToUpdate.Featureimage = imageData.url;
-        postDataToUpdate.imageId = imageData.public_id;
-        postDataToUpdate.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        if (!postDataToUpdate.Title) {
+            postDataToUpdate.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        }
 
         const postData = await postmodel.findByIdAndUpdate(postId, postDataToUpdate);
 
@@ -114,10 +107,7 @@ exports.updatePost = async (req, res) => {
             data: postData,
         });
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: 'Error while updating the Post' + error
-        });
+        handleServerError(404, req, error);
     }
 }
 
@@ -136,10 +126,7 @@ exports.deletePost = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "Error in deleting the Post!" + error
-        });
+        handleServerError(404, req, error);
     }
 }
 
@@ -192,10 +179,7 @@ exports.getFilteredPosts = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(404).json({
-            status: "failed",
-            message: "Error In Filtering The Posts" + error,
-        });
+        handleServerError(404, req, error);
     }
 }
 
