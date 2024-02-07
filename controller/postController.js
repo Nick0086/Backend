@@ -39,7 +39,7 @@ exports.createPost = async (req, res) => {
         const data = JSON.stringify(req.body);
         console.log("data",data)
 
-        const postData = await postmodel.create(postData)
+        const postData = await postmodel.create(data)
         res.status(HttpStatus.OK).json({
             status: "Success",
             message: "Post has been added successfully",
