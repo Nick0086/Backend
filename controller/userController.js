@@ -79,7 +79,7 @@ exports.loginUser = async (req, res) => {
                 res.status(HttpStatus.UNAUTHORIZED).json({ status: "Unauthorized", message: "Invalid email or password" });
             }
 
-            const token = await generateToken(userData.id);
+            const token = await generateToken(user.id);
             res.status(HttpStatus.OK).json({
                 status: "user login successfully",
                 data: user,
