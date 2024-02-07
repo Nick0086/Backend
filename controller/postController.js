@@ -36,12 +36,14 @@ exports.createPost = async (req, res) => {
         req.body.createdAt= moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
         req.body.updatedAt= moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
 
-        const postData = await postmodel.create(req.body);
+        const data = JSON.stringify(req.body);
+        console.log("data",data)
 
+        const postData = await postmodel.create(req.body)
         res.status(HttpStatus.OK).json({
             status: "Success",
             message: "Post has been added successfully",
-            data: postData,
+            data: data,
             req: req
         });
     } catch (error) {
