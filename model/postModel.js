@@ -10,7 +10,6 @@ const postSchema = new mongoose.Schema({
     },
     Featureimage: {
         type: String,
-        required:true,
     },
     imageId:{
         type:String,
