@@ -1,5 +1,5 @@
-exports.handleServerError = (status, res, error) => {
-    res.status(status).json({
+exports.handleServerError = (statu, res, error) => {
+    res.status(statu).json({
         status: false,
         message: "Internal server error",
         error: error,

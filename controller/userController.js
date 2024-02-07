@@ -19,7 +19,7 @@ exports.getUser = async (req, res) => {
             data: userData,
         })
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 }
 exports.alluser = async (req, res) => {
@@ -31,7 +31,7 @@ exports.alluser = async (req, res) => {
         })
 
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 }
 exports.createUser = async (req, res) => {
@@ -66,7 +66,7 @@ exports.createUser = async (req, res) => {
         });
 
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 }
 exports.loginUser = async (req, res) => {
@@ -93,7 +93,7 @@ exports.loginUser = async (req, res) => {
             res.status(HttpStatus.UNAUTHORIZED).json("User already Login");
         }
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 }
 exports.logout = async (req, res) => {

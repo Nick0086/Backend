@@ -30,7 +30,7 @@ exports.createPost = async (req, res) => {
             data: postData,
         });
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 };
 
@@ -46,7 +46,7 @@ exports.allPosts = async (req, res) => {
         });
 
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 }
 
@@ -68,7 +68,7 @@ exports.singlePost = async (req, res) => {
         });
 
     } catch (error) {
-        handleServerError(404, req, error);
+        handleServerError(404, res, error);
     }
 }
 
@@ -104,7 +104,7 @@ exports.updatePost = async (req, res) => {
             data: updatedPost,
         });
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 }
 
@@ -123,7 +123,7 @@ exports.deletePost = async (req, res) => {
         });
 
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 }
 
@@ -164,7 +164,7 @@ exports.getFilteredPosts = async (req, res) => {
         });
 
     } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, req, error);
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
     }
 }
 
