@@ -13,16 +13,8 @@ var likesRouter = require('./routes/like');
 var commentsRoutes = require('./routes/comments');
 
 var app = express();
-const allowedOrigins = ['https://earths.vercel.app'];
-if (process.env.PORT) {
-  allowedOrigins.push(`http://localhost:${process.env.PORT}`);
-} else {
-  // If PORT is not set, default to port 3000
-  allowedOrigins.push('http://localhost:3000');
-}
-
 const corsOptions = {
-  origin: allowedOrigins
+  origin: '*' // Allow requests from any origin
 };
 
 app.use(cors(corsOptions));
