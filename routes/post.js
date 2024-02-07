@@ -7,7 +7,7 @@ const upload = require('../middleware/multerMiddleware');
 router.get('/', allPosts);
 router.get('/post/:id', singlePost);
 router.put('/update/:id', upload.single(`file`), updatePost);
-router.post('/create', upload.single(`file`), createPost);
+router.post('/create', createPost);
 router.get('/post', getFilteredPosts);
 router.delete('/delete/:id', deletePost);
 module.exports = router;
