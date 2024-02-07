@@ -43,7 +43,7 @@ exports.createPost = async (req, res) => {
         res.status(HttpStatus.OK).json({
             status: "Success",
             message: "Post has been added successfully",
-            data: data,
+            data: postData,
             req: req
         });
     } catch (error) {
