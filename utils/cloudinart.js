@@ -17,12 +17,12 @@ exports.uploadeCloudinary = async (localFilePath) => {
                 resource_type: 'auto'
             });
             // Delete the temporary file from the server after successful upload
-            fs.unlinkSync(localFilePath);
+            // fs.unlinkSync(localFilePath);
             return response;
         }
 
     } catch (error) {
-        fs.unlinkSync(localFilePath)
+        // fs.unlinkSync(localFilePath)
         console.log("Error in uploading file to Cloudinary");
         return false;
     }
