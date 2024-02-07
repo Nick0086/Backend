@@ -14,7 +14,8 @@ const HttpStatus = {
 exports.createPost = async (req, res) => {
     try {
         
-        console.log("req",req.body)
+        console.log("req",req)
+        console.log("req.body",req.body)
         console.log("FILE",req.file)
 
         // Path to the uploaded file on the server
