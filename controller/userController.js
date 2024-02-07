@@ -74,8 +74,11 @@ exports.loginUser = async (req, res) => {
     try {
         if (login == 0) {
             const user = await userModel.findOne({ email: req.body.email });
+            if (!user) {
+                res.status(HttpStatus.UNAUTHORIZED).json({ status: "Unauthorized", message: "Invalid email or password" });
+            }
             const isPasswordValid = await bcrypt.compare(req.body.password, user.password)
-            if (!user || !isPasswordValid) {
+            if (!isPasswordValid) {
                 res.status(HttpStatus.UNAUTHORIZED).json({ status: "Unauthorized", message: "Invalid email or password" });
             }
 

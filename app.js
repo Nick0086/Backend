@@ -13,13 +13,14 @@ var likesRouter = require('./routes/like');
 var commentsRoutes = require('./routes/comments');
 
 var app = express();
+
 const corsOptions = {
   origin: '*', // Allow requests from any origin
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specified HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 
 
