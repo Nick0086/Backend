@@ -13,13 +13,12 @@ const HttpStatus = {
 // function for create post
 exports.createPost = async (req, res) => {
     try {
-        
-        console.log("req",req)
-        console.log("req.body",req.body)
-        console.log("FILE",req.file)
+
+        console.log("req.body", req.body)
+        console.log("FILE", req.file)
 
         // Path to the uploaded file on the server
-            const { url, public_id } = await uploadeCloudinary(req.file.path);
+        const { url, public_id } = await uploadeCloudinary(req.file.path);
 
         const postData = await postmodel.create({
             ...req.body,
@@ -33,7 +32,7 @@ exports.createPost = async (req, res) => {
             status: "Success",
             message: "Post has been added successfully",
             data: postData,
-            req:req
+            req: req
         });
     } catch (error) {
         handleServerError(HttpStatus.NOT_FOUND, res, error);
