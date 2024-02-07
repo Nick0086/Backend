@@ -13,8 +13,9 @@ const HttpStatus = {
 // function for create post
 exports.createPost = async (req, res) => {
     try {
-
-        console.log("req",req)
+        
+        console.log("req",req.body)
+        console.log("FILE",req.file)
 
         // Path to the uploaded file on the server
             const { url, public_id } = await uploadeCloudinary(req.file.path);
