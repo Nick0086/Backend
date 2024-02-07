@@ -21,18 +21,19 @@ exports.createPost = async (req, res) => {
         // Path to the uploaded file on the server
             // const { url, public_id } = await uploadeCloudinary(req.file.path);
 
-        // const postData = await postmodel.create({
-        //     ...req.body,
-        //     Featureimage: url,
-        //     imageId: public_id,
-        //     createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
-        //     updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
-        // });
+        const postData = await postmodel.create({
+            ...req.body,
+            // Featureimage: url,
+            // imageId: public_id,
+            createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
+            updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        });
 
         res.status(HttpStatus.OK).json({
             status: "Success",
             message: "Post has been added successfully",
-            // data: postData,
+            data: postData,
+            req:req
         });
     } catch (error) {
         handleServerError(HttpStatus.NOT_FOUND, res, error);
