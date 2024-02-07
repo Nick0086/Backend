@@ -12,6 +12,14 @@ var postsRouter = require('./routes/post');
 var likesRouter = require('./routes/like');
 var commentsRoutes = require('./routes/comments');
 
+var app = express();
+const corsOptions = {
+  origin: '*', // Allow requests from any origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specified HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
+};
+
+
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Origin",
@@ -21,13 +29,6 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
-
-var app = express();
-const corsOptions = {
-  origin: '*', // Allow requests from any origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specified HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
-};
 
 
 app.use(cors(corsOptions));
