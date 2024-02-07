@@ -20,7 +20,7 @@ exports.createPost = async (req, res) => {
         const { Title, status, Category, userId, Content } = req.body;
 
         // / Path to the uploaded file on the server
-        const { url, public_id } = await uploadeCloudinary(req.file.originalname);
+        // const { url, public_id } = await uploadeCloudinary(req.file.originalname);
 
         const data = {
             "Title": Title,
@@ -34,7 +34,7 @@ exports.createPost = async (req, res) => {
             updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
         }
 
-        const postData = await postmodel.create(data);
+        const postData = await postmodel.create(...data);
 
         res.status(HttpStatus.OK).json({
             status: "Success",
