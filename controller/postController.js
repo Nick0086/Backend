@@ -18,7 +18,7 @@ exports.createPost = async (req, res) => {
         console.log("FILE", req.file)
 
         // Path to the uploaded file on the server
-        const { url, public_id } = await uploadeCloudinary(req.file.path);
+        // const { url, public_id } = await uploadeCloudinary(req.file);
 
         const postData = await postmodel.create({
             ...req.body,
