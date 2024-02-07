@@ -17,22 +17,24 @@ exports.createPost = async (req, res) => {
         console.log("req.body", req.body);
         console.log("FILE", req.file);
 
-        const { Title, status, Category, userId,Content } = req.body;
+        const { Title, status, Category, userId, Content } = req.body;
 
-        // Path to the uploaded file on the server
+        // / Path to the uploaded file on the server
         const { url, public_id } = await uploadeCloudinary(req.file.originalname);
 
-        const postData = await postmodel.create({
-            Title,
-            status,
-            Category,
-            userId,
-            Content,
+        const data = {
+            "Title": Title,
+            "status": status,
+            "Category": Category,
+            "userId": userId,
+            "Content": Content,
             // Featureimage: url,
             // imageId: public_id,
             createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
             updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
-        });
+        }
+
+        const postData = await postmodel.create(data);
 
         res.status(HttpStatus.OK).json({
             status: "Success",
