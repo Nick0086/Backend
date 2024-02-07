@@ -17,7 +17,7 @@ exports.createPost = async (req, res) => {
         console.log("req.body", req.body);
         console.log("FILE", req.file);
 
-        const { Title, status, Category, userId } = req.body;
+        const { Title, status, Category, userId,Content } = req.body;
 
         // Path to the uploaded file on the server
         const { url, public_id } = await uploadeCloudinary(req.file.originalname);
@@ -27,6 +27,7 @@ exports.createPost = async (req, res) => {
             status,
             Category,
             userId,
+            Content,
             Featureimage: url,
             imageId: public_id,
             createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
