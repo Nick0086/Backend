@@ -14,16 +14,21 @@ const HttpStatus = {
 exports.createPost = async (req, res) => {
     try {
 
-        console.log("req.body", req.body)
-        console.log("FILE", req.file)
+        console.log("req.body", req.body);
+        console.log("FILE", req.file);
+
+        const { Title, status, Category, userId } = req.body;
 
         // Path to the uploaded file on the server
-        // const { url, public_id } = await uploadeCloudinary(req.file);
+        const { url, public_id } = await uploadeCloudinary(req.file);
 
         const postData = await postmodel.create({
-            ...req.body,
-            // Featureimage: url,
-            // imageId: public_id,
+            Title,
+            status,
+            Category,
+            userId,
+            Featureimage: url,
+            imageId: public_id,
             createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
             updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
         });
