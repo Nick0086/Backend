@@ -1,4 +1,5 @@
 const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -16,10 +17,12 @@ exports.uploadeCloudinary = async (localFilePath) => {
                 resource_type: 'auto'
             });
             // Delete the temporary file from the server after successful upload
+            fs.unlinkSync(localFilePath);
             return response;
         }
 
     } catch (error) {
+        fs.unlinkSync(localFilePath)
         console.log("Error in uploading file to Cloudinary");
         return false;
     }
