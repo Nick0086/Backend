@@ -2,6 +2,7 @@ const userModel = require("../model/userModel");
 const bcrypt = require('bcrypt');
 const { handleServerError } = require("../utils/handleServerError");
 const { generateToken } = require("../middleware/authMiddleware");
+const jwt = require('jsonwebtoken');
 var login = 0;
 const HttpStatus = {
     OK: 200,
@@ -57,7 +58,7 @@ exports.createUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         // Create user with hashed password
         const userData = await userModel.create({ ...req.body, password: hashedPassword });
-        const token = generateToken(userData.id);
+        const token = await  generateToken(userData.id);
         res.status(HttpStatus.OK).json({
             status: "Success",
             data: userData,
@@ -78,7 +79,7 @@ exports.loginUser = async (req, res) => {
                 res.status(HttpStatus.UNAUTHORIZED).json({ status: "Unauthorized", message: "Invalid email or password" });
             }
 
-            const token = generateToken(userData.id);
+            const token = await generateToken(userData.id);
             res.status(HttpStatus.OK).json({
                 status: "user login successfully",
                 data: user,

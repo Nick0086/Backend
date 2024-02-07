@@ -31,5 +31,6 @@ exports.authenticateUser = async (req, res, next) => {
 }
 
 exports.generateToken = async (userId) => {
-    return await jwt.sign(userId, process.env.JWT_KEY);
+    const res = await jwt.sign(userId, process.env.JWT_KEY);
+    return res
 }
