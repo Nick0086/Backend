@@ -30,14 +30,13 @@ exports.createPost = async (req, res) => {
         //     "Content": Content,
         //     // Featureimage: url,
         //     // imageId: public_id,
-            
+
         // }
 
-        const postData = await postmodel.create({
-            ...req.body,
-            createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
-            updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
-        });
+        req.body.createdAt= moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+        req.body.updatedAt= moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
+
+        const postData = await postmodel.create(req.body);
 
         res.status(HttpStatus.OK).json({
             status: "Success",
