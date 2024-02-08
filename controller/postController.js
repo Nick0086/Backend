@@ -27,6 +27,7 @@ exports.createPost = async (req, res) => {
 
         // Path to the uploaded file on the server
         const image = await uploadeCloudinary(req.file.buffer);
+        console.log("image", image);
 
         if (!image || !image.url) {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -46,7 +47,6 @@ exports.createPost = async (req, res) => {
             status: "Success",
             message: "Post has been added successfully",
             data: postData,
-            req: req
         });
     } catch (error) {
         handleServerError(HttpStatus.NOT_FOUND, res, error);
