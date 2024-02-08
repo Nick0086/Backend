@@ -35,8 +35,8 @@ exports.createPost = async (req, res) => {
             });
         }
 
-        req.body.Featureimage: image.url,
-        req.body.imageId: image.public_id,
+        req.body.Featureimage= image.url,
+        req.body.imageId= image.public_id,
         req.body.createdAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)');
         req.body.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)');
 
