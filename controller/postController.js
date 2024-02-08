@@ -81,7 +81,7 @@ exports.singlePost = async (req, res) => {
             })
         }
 
-        res.status(HttpStatus.NOT_FOUND).json({
+        res.status(HttpStatus.OK).json({
             status: "Success",
             data: postData,
         });
