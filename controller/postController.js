@@ -26,7 +26,7 @@ exports.createPost = async (req, res) => {
         }
 
         // Path to the uploaded file on the server
-        const { url, public_id } = await uploadeCloudinary(req.file.buffer);
+        const image = await uploadeCloudinary(req.file.buffer);
 
         if (!image || !image.url) {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -38,8 +38,8 @@ exports.createPost = async (req, res) => {
 
         const postData = await postmodel.create({
             ...req.body,
-            Featureimage: url,
-            imageId: public_id,
+            Featureimage: image.url,
+            imageId: image.public_id,
             createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
             updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
         })
