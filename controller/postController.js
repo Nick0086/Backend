@@ -11,47 +11,6 @@ const HttpStatus = {
     INTERNAL_SERVER_ERROR:500
 };
 
-// function for create post
-exports.createPost = async (req, res) => {
-    try {
-
-        console.log("req.body", req.body);
-        console.log("FILE", req.file);
-
-        if (!req.file) {
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: "Error",
-                message: "No file uploaded",
-            });
-        }
-
-        // Path to the uploaded file on the server
-        const image = await uploadeCloudinary(req.file.buffer);
-        console.log("image", image);
-
-        if (!image || !image.url) {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: "Error",
-                message: "Failed to upload image to Cloudinary",
-            });
-        }
-
-        req.body.Featureimage= image.url
-        req.body.imageId= image.public_id
-        req.body.createdAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)');
-        req.body.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)');
-
-
-        const postData = await postmodel.create(req.body)
-        res.status(HttpStatus.OK).json({
-            status: "Success",
-            message: "Post has been added successfully",
-            data: postData,
-        });
-    } catch (error) {
-        handleServerError(HttpStatus.NOT_FOUND, res, error);
-    }
-};
 
 // function for get all post
 exports.allPosts = async (req, res) => {
@@ -91,11 +50,55 @@ exports.singlePost = async (req, res) => {
     }
 }
 
+// function for create post
+exports.createPost = async (req, res) => {
+    try {
+
+        console.log("req.body", req.body);
+        console.log("FILE", req.file);
+
+        if (!req.file) {
+            return res.status(HttpStatus.BAD_REQUEST).json({
+                status: "Error",
+                message: "No file uploaded",
+            });
+        }
+
+        // Path to the uploaded file on the server
+        const image = await uploadeCloudinary(req.file.buffer);
+
+        if (!image || !image.url) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                status: "Error",
+                message: "Failed to upload image to Cloudinary",
+            });
+        }
+
+        req.body.Featureimage= image.url
+        req.body.imageId= image.public_id
+        req.body.createdAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)');
+        req.body.updatedAt = moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)');
+
+
+        const postData = await postmodel.create(req.body)
+        res.status(HttpStatus.OK).json({
+            status: "Success",
+            message: "Post has been added successfully",
+            data: postData,
+        });
+    } catch (error) {
+        handleServerError(HttpStatus.NOT_FOUND, res, error);
+    }
+};
+
 // function for update single post
 exports.updatePost = async (req, res) => {
     const postId = req.params.id;
     const postDataToUpdate = req.body;
     try {
+
+        console.log("req.body",req.body)
+
         console.log("postDataToUpdate", postDataToUpdate)
         const post = await postmodel.findOne({ _id: postId });
         console.log("post", post)
@@ -106,10 +109,10 @@ exports.updatePost = async (req, res) => {
         if (postDataToUpdate.imageId) {
             deleteFromCloudinary(postDataToUpdate.imageId) //delete image from cloudinary server 
             // Path to the uploaded file on the server
-            const { url, public_id } = await uploadeCloudinary(req.file.path);
+            const image = await uploadeCloudinary(req.file.buffer);
             // chage image fields with url
-            postDataToUpdate.Featureimage = url;
-            postDataToUpdate.imageId = public_id;
+            postDataToUpdate.Featureimage = image.url;
+            postDataToUpdate.imageId = image.public_id;
         }
 
         if (postDataToUpdate.Title) {
