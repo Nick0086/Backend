@@ -75,7 +75,7 @@ exports.singlePost = async (req, res) => {
         const postData = await postmodel.findById(req.params.id).populate("userId", "-password")
 
         if (!postData) {
-            return res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.NOT_FOUND).json({
                 status: "Failed",
                 Message: "No post found"
             })
