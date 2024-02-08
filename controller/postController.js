@@ -7,7 +7,8 @@ const HttpStatus = {
     OK: 200,
     CONFLICT: 409,
     UNAUTHORIZED: 401,
-    NOT_FOUND: 404
+    NOT_FOUND: 404,
+    INTERNAL_SERVER_ERROR:500
 };
 
 // function for create post
@@ -17,29 +18,31 @@ exports.createPost = async (req, res) => {
         console.log("req.body", req.body);
         console.log("FILE", req.file);
 
-        // const { Title, status, Category, userId, Content } = req.body;
+        if (!req.file) {
+            return res.status(HttpStatus.BAD_REQUEST).json({
+                status: "Error",
+                message: "No file uploaded",
+            });
+        }
 
-        // / Path to the uploaded file on the server
-        // const { url, public_id } = await uploadeCloudinary(req.file.originalname);
+        // Path to the uploaded file on the server
+        const { url, public_id } = await uploadeCloudinary(req.file.buffer);
 
-        // const data = {
-        //     "Title": Title,
-        //     "status": status,
-        //     "Category": Category,
-        //     "userId": userId,
-        //     "Content": Content,
-        //     // Featureimage: url,
-        //     // imageId: public_id,
+        if (!image || !image.url) {
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+                status: "Error",
+                message: "Failed to upload image to Cloudinary",
+            });
+        }
 
-        // }
 
-        req.body.createdAt= moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
-        req.body.updatedAt= moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)')
-
-        // const data = JSON.stringify(req.body);
-        // console.log("data",data)
-
-        const postData = await postmodel.create(req.body)
+        const postData = await postmodel.create({
+            ...req.body,
+            Featureimage: url,
+            imageId: public_id,
+            createdAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
+            updatedAt: moment().tz(userTimeZone).format('DD-MM-YYYY HH:mm:ss [GMT]Z (z)'),
+        })
         res.status(HttpStatus.OK).json({
             status: "Success",
             message: "Post has been added successfully",
