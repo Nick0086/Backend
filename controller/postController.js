@@ -54,9 +54,6 @@ exports.singlePost = async (req, res) => {
 exports.createPost = async (req, res) => {
     try {
 
-        console.log("req.body", req.body);
-        console.log("FILE", req.file);
-
         if (!req.file) {
             return res.status(HttpStatus.BAD_REQUEST).json({
                 status: "Error",
@@ -96,12 +93,7 @@ exports.updatePost = async (req, res) => {
     const postId = req.params.id;
     const postDataToUpdate = req.body;
     try {
-
-        console.log("req.body",req.body)
-
-        console.log("postDataToUpdate", postDataToUpdate)
         const post = await postmodel.findOne({ _id: postId });
-        console.log("post", post)
         if (!post) {
             return res.status(404).json({ status: "Failed", message: "No post found" });
         }

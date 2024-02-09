@@ -4,5 +4,4 @@ exports.handleServerError = (statu, res, error) => {
         message: "Internal server error",
         error: error,
     })
-    console.log("error : ",error)
 }
