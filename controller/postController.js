@@ -165,7 +165,8 @@ exports.getFilteredPosts = async (req, res) => {
 
         console.log("getFilteredPosts",filterQuery)
 
-        var total_data = await postmodel?.find(filterQuery)?.count() || 0;
+        var total_data = await postmodel?.find(filterQuery);
+        total_data = total_data?.length || 0
         var total_page = Math.ceil(total_data / limit);
 
         // const posts = await postmodel.find(filterQuery).populate("userId", "-password")
