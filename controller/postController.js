@@ -16,7 +16,7 @@ const HttpStatus = {
 exports.allPosts = async (req, res) => {
     try {
 
-        const postData = await postmodel.find().populate("userId", "-password");
+        const postData = await postmodel?.find().populate("userId", "-password");
         res.status(HttpStatus.OK).json({
             status: "Success",
             data: postData,
@@ -31,7 +31,7 @@ exports.allPosts = async (req, res) => {
 // function for get single post
 exports.singlePost = async (req, res) => {
     try {
-        const postData = await postmodel.findById(req.params.id).populate("userId", "-password")
+        const postData = await postmodel?.findById(req.params.id).populate("userId", "-password")
 
         if (!postData) {
             return res.status(HttpStatus.NOT_FOUND).json({
@@ -163,7 +163,9 @@ exports.getFilteredPosts = async (req, res) => {
         let page_no = parseInt(req.query.page) || 1;
         let skipRecords = (page_no - 1) * limit;
 
-        var total_data = await postmodel.find(filterQuery).count();
+        console.log(filterQuery)
+
+        var total_data = await postmodel?.find(filterQuery)?.count() || );
         var total_page = Math.ceil(total_data / limit);
 
         // const posts = await postmodel.find(filterQuery).populate("userId", "-password")
