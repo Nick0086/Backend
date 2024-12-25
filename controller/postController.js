@@ -163,9 +163,9 @@ exports.getFilteredPosts = async (req, res) => {
         let page_no = parseInt(req.query.page) || 1;
         let skipRecords = (page_no - 1) * limit;
 
-        console.log(filterQuery)
+        console.log("getFilteredPosts",filterQuery)
 
-        var total_data = await postmodel?.find(filterQuery)?.count() || );
+        var total_data = await postmodel?.find(filterQuery)?.count() || 0;
         var total_page = Math.ceil(total_data / limit);
 
         // const posts = await postmodel.find(filterQuery).populate("userId", "-password")
